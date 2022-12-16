@@ -3,48 +3,50 @@
 namespace app\models;
 
 require_once 'app/Database.php';
+require_once 'app/models/User.php';
+
 use app\Database;
+use app\models\User;
 use PDO;
 
 class Appointment {
     private $id;
-    private $name;
-    private $address;
-    private $symptoms;
-    private $speciality;
+    private $doctor_id;
+    private $user_id;
+    private $date;
+    private $time;
 
     public function __construct($obj = null) {
         if ($obj != null) {
-            $this->id = $obj['id'];
-            $this->name = $obj['name'];
-            $this->address = $obj['address'];
-            $this->symptoms = $obj['symptoms'];
-            $this->speciality = $obj['speciality'];
+            $this->doctor_id = $obj['doctor'];
+            $this->user_id = $_SESSION['user']['id'];
+            $this->date = $obj['date'];
+            $this->time = $obj['time'];
         }
     }
 
     public function getId() { return $this->id; }
-    public function getName() { return $this->name; }
-    public function getAddress() { return $this->address; }
-    public function getSymptoms() { return $this->symptoms; }
-    public function getSpeciality() { return $this->speciality; }
+    public function getDoctor() { return $this->doctor; }
+    public function getUser() { return $this->user; }
+    public function getDate() { return $this->date; }
+    public function getTime() { return $this->time; }
 
-    public function setName(string $name) { $this->name = $name; }
-    public function setAddress(string $address) { $this->address = $address; }
-    public function setSymptoms(string $symptoms) { $this->symptoms = $symptoms; }
-    public function setSpeciality(string $speciality) { $this->speciality = $speciality; }
+    public function setDoctor(string $doctor_id) { $this->doctor_id = $doctor_id; }
+    public function setUser(string $user_id) { $this->user_id = $user_id; }
+    public function setDate(string $date) { $this->date = $date; }
+    public function setTime(string $time) { $this->time = $time; }
 
-    public static function getAppointments() {
+    public static function getAll() {
         $req = Database::get()->prepare('SELECT * FROM Appointments WHERE user_id = ?');
-        $req->execute([$symptom]);
+        $req->execute([$_SESSION['user']['id']]);
         $res = $req->fetchAll();
 
         return ($res == null) ? null : $res;
     }
 
     public function save() {
-        $req = Database::get()->prepare('INSERT INTO Appointments (name, address, symptoms, speciality) VALUES (?, ?, ?, ?)');
-        $req->execute([$this->name, $this->address, $this->symptoms, $this->speciality]);
+        $req = Database::get()->prepare('INSERT INTO Appointments (doctor_id, user_id, date, time) VALUES (?, ?, ?, ?)');
+        $req->execute([$this->doctor_id, $this->user_id, $this->date, $this->time]);
         return $req;
     }
 }

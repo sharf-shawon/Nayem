@@ -21,7 +21,6 @@ if (isFormSubmitted()) {
     }
 
     if (md5($password) == $accPassword) {
-        $_SESSION['user_id'] = User::getByEmail($email);
         $_SESSION['user'] = User::getByEmail($email);
         $_SESSION['auth'] = 1;
         header('Location: ./');

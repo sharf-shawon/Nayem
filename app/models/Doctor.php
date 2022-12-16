@@ -34,6 +34,25 @@ class Doctor {
     public function setSymptoms(string $symptoms) { $this->symptoms = $symptoms; }
     public function setSpeciality(string $speciality) { $this->speciality = $speciality; }
 
+    public static function getAll() {
+        $req = Database::get()->prepare('SELECT * FROM Doctors');
+        $req->execute();
+        $res = $req->fetchAll();
+
+        return ($res == null) ? null : $res;
+    }
+
+    public static function getById(string $id) {
+        if ($id == null) {
+            return null;
+        }
+        $req = Database::get()->prepare('SELECT * FROM Doctors WHERE id = ?');
+        $req->execute([$id]);
+        $res = $req->fetch(PDO::FETCH_ASSOC);
+
+        return ($res == null) ? null : $res;
+    }
+
     public static function getBySymptom(string $symptom) {
         if ($symptom == null) {
             return null;

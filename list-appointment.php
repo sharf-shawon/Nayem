@@ -1,13 +1,12 @@
 <?php
 
 require_once 'app/config.php';
-require_once 'app/models/User.php';
+require_once 'app/models/Appointment.php';
 require_once 'app/models/Doctor.php';
-
-use app\models\User;
+require_once 'app/models/User.php';
+use app\models\Appointment;
 use app\models\Doctor;
-$page = 'Search Doctor';
-
+use app\models\User;
 
 session_start();
 
@@ -15,15 +14,13 @@ if (isset($_SESSION['user']) && $_SESSION['user'] != null) {
     $user = new User($_SESSION['user']);
 }
 
-if (isset($_POST['symptom']) && $_POST['symptom'] != null) {
-    $doctors = Doctor::getBySymptom($_POST['symptom']);
+if (!isset($_SESSION['auth']) && $_SESSION['auth'] == null) {
+    header('Location: ./login');
+    die();
 }
 
-if (isset($_POST['speciality']) && $_POST['speciality'] != null) {
-    $doctors = Doctor::getBySpeciality($_POST['speciality']);
-}
-
-
+$page = 'My Appointment List';
+$appointments = Appointment::getAll();
 
 ?>
 
@@ -47,34 +44,25 @@ if (isset($_POST['speciality']) && $_POST['speciality'] != null) {
         </div>
     </nav>
     <div class="container bg-white shadow p-3 my-5 rounded-3">
-        <form action="/" method="post">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card-header">Search by Symptoms</div>
-                    <div class="card card-body">
-                        <select class="form-control" name="symptom" id="symptom" >
-                            <option></option>
-                            <option value="Fever">Fever</option>
-                            <option value="Stomach Ache">Stomach Ache</option>
-                            <option value="Depression">Depression</option>
-                        </select>
-                        <input class="btn btn-primary mt-3" type="submit" value="Search">
-                    </div>
+        <?php if(isset($appointments))
+        foreach ($appointments as $appointment)
+        { 
+            $doctor = Doctor::getById($appointment['doctor_id']);
+        ?>
+            <div class="card mb-3">
+                <div class="card-header">
+                    You have an appointment with <?= $doctor['name'] ?>
                 </div>
-                <div class="col-md-6">
-                    <div class="card-header">Search by Speciality</div>
-                    <div class="card card-body">
-                        <select class="form-control" name="speciality" id="speciality" >
-                            <option></option>
-                            <option value="Medicine">Medicine</option>
-                            <option value="Urologist">Urologist</option>
-                            <option value="Depressionist">Depressionist</option>
-                        </select>
-                        <input class="btn btn-primary mt-3" type="submit" value="Search">
-                    </div>
+                <div class="card-body">
+                    Address: <?= $doctor['address'] ?>
+                    <br>
+                    Date: <?= $appointment['date'] ?>
+                    <br>
+                    Time: <?= $appointment['time'] ?>
+                    <br>
                 </div>
             </div>
-        </form>
+        <?php } ?>
     </div>
     <div class="container bg-white shadow p-3 my-5 rounded-3">
         <?php if(isset($doctors))

@@ -3,6 +3,11 @@
 require_once 'app/config.php';
 require_once 'app/models/Doctor.php';
 use app\models\Doctor;
+session_start();
+
+if (isset($_SESSION['user']) && $_SESSION['user'] != null) {
+    $user = new User($_SESSION['user']);
+}
 
 function isFormSubmitted() {
     return isset($_POST['submit']);
